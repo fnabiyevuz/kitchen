@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket</title>
+</head>
+<body>
+
+<table style="border: 1px solid black;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid black">Summa</th>
+            <th style="border: 1px solid black">Comment</th>
+            <th style="border: 1px solid black"></th>
+        </tr>
+    </thead>
+    <tbody id="items">
+        <tr>
+
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td><input type="number" id="summa"></td>
+            <td><input type="text" id="comment"></td>
+            <td><button onclick="chiqim();"> Chiqim qo'shish</button></td>
+        </tr>
+    </tfoot>
+</table>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    function chiqim(){
+        let summa = document.getElementById('summa').value;
+        let comment = document.getElementById('comment').value;
+        console.log(summa, comment);
+        $.ajax({
+            type:"POST",
+            url: "http://143.198.230.17:8000/api/chiqim/add/",
+            data:{
+                summa:summa,
+                comment:comment,
+            },
+            success: function (data){
+                console.log(data);
+            }
+        });
+    }
+</script>
+</body>
+</html>

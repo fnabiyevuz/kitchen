@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Room</title>
+</head>
+<body>
+O'zimga
+<table style="border: 1px solid black; width: 354px;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid black">Product</th>
+            <th style="border: 1px solid black">Quantity</th>
+            <th style="border: 1px solid black">Price</th>
+        </tr>
+    </thead>
+    <tbody id="items">
+
+    </tbody>
+</table>
+<button onclick="bookmeal();" style="margin-top: 15px">Ovqat qo'shish</button>
+<button onclick="bookwater();" style="margin-top: 15px">Donalik narsa qo'shish</button>
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script>
+
+    var socket = new WebSocket("ws://192.168.10.147:8000/ws/rooms/");
+
+    socket.onopen = function () {
+        console.log("Connected")
+        socket.send(JSON.stringify({
+            "type":"alldata"
+        }));
+    };
+
+    socket.onclose = function (event) {
+        if (event.wasClean) {
+            alert('Соединение закрыто чисто');
+            console.log('Clean close')
+        } else {
+            console.log('Close by error')
+        }
+        console.log('Код: ' + event.code + ' причина: ' + event.reason)
+    };
+
+    socket.onmessage = function (event) {
+        let response = JSON.parse(event.data);
+        console.log(response);
+        if (response['type'] == 'alldata'){
+            books = response['bookswithitems'];
+            $("#items").empty();
+            for(dt of books){
+                if(dt['room']==3){
+                    for(item of dt['bookitems']){
+                        var tr = `<tr>
+                                <td style="border: 1px solid black">`+ item['product'] +`</td>
+                                <td style="border: 1px solid black">`+ item['quantity'] +`</td>
+                                <td style="border: 1px solid black">`+ item['price'] +`</td>
+                            </tr>`;
+                        $("#items").append(tr);
+                    }
+                }
+            }
+        }
+    };
+
+    socket.onerror = function (error) {
+        console.log(error.message)
+    };
+    function bookmeal() {
+        socket.send(JSON.stringify({
+            "type":"bookwaiter",
+            "data":{
+                'user':1,
+                'product':1,
+                'quantity':1
+            }
+        }));
+    }
+    function bookwater() {
+        socket.send(JSON.stringify({
+            "type":"bookwaiter",
+            "data":{
+                'user':1,
+                'product':4,
+                'quantity':1
+            }
+        }));
+    }
+</script>
+</body>
+</html>

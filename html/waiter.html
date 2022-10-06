@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Waiter</title>
+</head>
+<body>
+1-afitsant
+<table style="border: 1px solid black; width: 354px;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid black">Xonalar</th>
+            <th style="border: 1px solid black">Summa</th>
+        </tr>
+    </thead>
+    <tbody id="items">
+        <tr>
+
+        </tr>
+    </tbody>
+</table>
+
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script>
+
+    var socket = new WebSocket("ws://localhost:8000/ws/rooms/");
+
+    socket.onopen = function () {
+        console.log("Connected")
+        socket.send(JSON.stringify({
+            "type":"alldata"
+        }));
+    };
+
+    socket.onclose = function (event) {
+        if (event.wasClean) {
+            alert('Соединение закрыто чисто');
+            console.log('Clean close')
+        } else {
+            console.log('Close by error')
+        }
+        console.log('Код: ' + event.code + ' причина: ' + event.reason)
+    };
+
+    socket.onmessage = function (event) {
+        let response = JSON.parse(event.data);
+        console.log(response)
+        if (response['type'] == 'alldata'){
+            $("#items").empty();
+            for (p of response['books']){
+                if(p['waiter'] == 1){
+                    var tr = `<tr>
+                                    <td style="border: 1px solid black">`+ p['room']['name'] +`</td>
+                                    <td style="border: 1px solid black">`+ p['total'] +`</td>
+                                </tr>`;
+                    $("#items").append(tr);
+                }
+            }
+        }
+    };
+
+    socket.onerror = function (error) {
+        console.log(error.message)
+    };
+</script>
+</body>
+</html>

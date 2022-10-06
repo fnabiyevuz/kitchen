@@ -1,0 +1,52 @@
+ws://127.0.0.1:8000/ws/rooms/
+
+hamma xonalarni olish
+{
+"type":"rooms"
+}
+
+xona band qilish
+waiter - waiter id si
+busytype - busytype id si
+{
+"type":"busy1",
+"data":{
+	"id":1,
+	"waiter":3,
+	"busytype":2
+}
+}
+
+xonani bo'shatish
+id - roomni idsi
+{
+"type":"busy0",
+"id":1
+}
+
+ws://127.0.0.1:8000/ws/room/1/
+
+xonadagi itemlarni ko'rish
+bundagi 1 xonaning id si
+
+{
+"type":"roomitem",
+}
+
+bookitemga product qo'shish
+
+{
+"type":"addbookitem",
+"data":{
+"product":1,
+"quantity":1
+}
+}
+
+ws://127.0.0.1:8000/ws/room/cook_2/
+cook_2 bu yerda 2 o'sha cookning numberi
+
+cookitemlarni olish
+{
+"type":"cookitem"
+}

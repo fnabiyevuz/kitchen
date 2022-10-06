@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket</title>
+</head>
+<body>
+
+<table style="border: 1px solid black; width: 354px;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid black">Product</th>
+            <th style="border: 1px solid black">Quantity</th>
+        </tr>
+    </thead>
+    <tbody id="items">
+        <tr>
+
+        </tr>
+    </tbody>
+</table>
+<button onclick="booking();" style="margin-top: 15px"> buyurtma berish</button>
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script>
+
+    var socket = new WebSocket("ws://localhost:8000/ws/books/");
+
+    socket.onopen = function () {
+        console.log("Connected")
+    };
+
+    socket.onclose = function (event) {
+        if (event.wasClean) {
+            alert('Соединение закрыто чисто');
+            console.log('Clean close')
+        } else {
+            console.log('Close by error')
+        }
+        console.log('Код: ' + event.code + ' причина: ' + event.reason)
+    };
+
+    socket.onmessage = function (event) {
+        let response = JSON.parse(event.data);
+        let data = response['data'];
+        console.log(data)
+        if (data['type'] == 'cook'){
+            console.log(data['type'])
+            for (p of data['rooms']){
+                console.log(p['name']);
+                var tr = `<tr>
+                                <td style="border: 1px solid black">`+ p['name'] +`</td>
+                                <td style="border: 1px solid black">`+ p['room'] +`</td>
+                                <td style="border: 1px solid black"><button onclick="bandqilish(`+ p['id'] +`);"> Band qilish</button></td>
+                            </tr>`;
+                $("#items").append(tr);
+            }
+        }
+    };
+
+    socket.onerror = function (error) {
+        console.log(error.message)
+    };
+    function booking() {
+        socket.send(JSON.stringify({
+            "type":"booking",
+            "data":{
+                'book':1,
+                'product':1,
+                'quantity':1.5,
+            },
+        }));
+    }
+</script>
+</body>
+</html>

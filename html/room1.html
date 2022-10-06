@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Room1</title>
+</head>
+<body>
+
+<table style="border: 1px solid black; width: 354px; margin-top: 15px">
+    <thead>
+        <tr>
+            <th style="border: 1px solid black">Xona</th>
+            <th style="border: 1px solid black">Room</th>
+            <th style="border: 1px solid black">Bo'shatish</th>
+        </tr>
+    </thead>
+    <tbody id="room1">
+        <tr>
+
+        </tr>
+    </tbody>
+</table>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script>
+
+    var socket = new WebSocket("ws://localhost:8000/ws/rooms/");
+
+    socket.onopen = function () {
+        console.log("Connected")
+        socket.send(JSON.stringify({
+            "type":"alldata"
+        }));
+    };
+
+    socket.onclose = function (event) {
+        if (event.wasClean) {
+            alert('Соединение закрыто чисто');
+            console.log('Clean close')
+        } else {
+            console.log('Close by error')
+        }
+        console.log('Код: ' + event.code + ' причина: ' + event.reason)
+    };
+
+    socket.onmessage = function (event) {
+        let response = JSON.parse(event.data);
+        console.log(response)
+        if (response['type'] == 'alldata'){
+            $("#room1").empty();
+            for (p of response['room1']){
+                var tr = `<tr>
+                                <td style="border: 1px solid black">`+ p['name'] +`</td>
+                                <td style="border: 1px solid black">`+ p['room'] +`</td>
+                                <td style="border: 1px solid black"><button onclick="boshatish(`+ p['id'] +`);"> Bo'shatish</button></td>
+                            </tr>`;
+                $("#room1").append(tr);
+            }
+        }
+
+    };
+
+    socket.onerror = function (error) {
+        console.log(error.message)
+    };
+    function boshatish(id){
+        socket.send(JSON.stringify({
+            "type":"busy0",
+            "id":id
+        }));
+    }
+</script>
+</body>
+</html>
